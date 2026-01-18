@@ -36,11 +36,22 @@
 *   **Build Tool**: Vite
 *   **Backend & Auth**: Firebase
 
-## 📱 Screenshots
+## 📱 App Gallery
 
-| Login Screen | Dashboard (Preview) |
+<div align="center">
+
+| | |
 |:---:|:---:|
-| <img src="public/babysarthi2.png" alt="Login" width="300" /> | <img src="public/babysarthi.png" alt="Dashboard" width="300" /> |
+| <img src="public/screenshots/overview-1.png" alt="Overview 1" width="400"/> | <img src="public/screenshots/overview-2.png" alt="Overview 2" width="400"/> |
+
+### 📸 Feature Highlights
+
+| | | |
+|:---:|:---:|:---:|
+| <img src="public/screenshots/demo-1.png" width="250"/> | <img src="public/screenshots/demo-2.png" width="250"/> | <img src="public/screenshots/demo-3.png" width="250"/> |
+| <img src="public/screenshots/demo-4.png" width="250"/> | <img src="public/screenshots/demo-5.png" width="250"/> | |
+
+</div>
 
 *(Note: Images are for demonstration purposes)*
 
