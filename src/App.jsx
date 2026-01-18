@@ -41,8 +41,13 @@ import {
   Settings, LogOut, Droplets, Moon, Coffee, ChevronLeft, Stethoscope,
   Zap, AlertTriangle, FileText, Share2, Timer, X, Thermometer, Brain,
   Mail, Lock, Chrome, Facebook, Instagram, Phone, Smartphone, Wind,
-  Star, Palette, Cloud, Eye, EyeOff, Info
+  Star, Palette, Cloud, Eye, EyeOff, Info, Music
 } from 'lucide-react';
+import LoggerModal from './components/LoggerModal';
+import TrackerView from './components/TrackerView';
+import ChatInterface from './components/ChatInterface';
+import MilestonesView from './components/MilestonesView';
+import LullabyPlayer from './components/LullabyPlayer';
 
 // --- Firebase Configuration ---
 const firebaseConfig = JSON.parse(__firebase_config);
@@ -363,6 +368,25 @@ export default function App() {
   const [authMode, setAuthMode] = useState('signup');
   const [isRoleSaving, setIsRoleSaving] = useState(false);
 
+  // New State for Features
+  const [activeModal, setActiveModal] = useState(null);
+  const [logs, setLogs] = useState(() => {
+    const saved = localStorage.getItem('babysarthi_logs');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('babysarthi_logs', JSON.stringify(logs));
+  }, [logs]);
+
+  const handleSaveLog = (logData) => {
+    setLogs(prev => [...prev, { ...logData, id: Date.now() }]);
+  };
+
+  const handleDeleteLog = (id) => {
+    setLogs(prev => prev.filter(l => l.id !== id));
+  };
+
   useEffect(() => {
     // If we have a user from mock login, don't listen to real auth changes
     if (user?.isMock) return;
@@ -516,7 +540,11 @@ export default function App() {
                 { id: 'Mood', icon: Brain, label: 'Mood', color: 'pink' },
                 { id: 'Medical', icon: Thermometer, label: 'Fever', color: 'orange' },
               ].map((btn, i) => (
-                <button key={i} className="flex flex-col items-center gap-2 group transition-all">
+                <button
+                  key={i}
+                  onClick={() => setActiveModal(btn)}
+                  className="flex flex-col items-center gap-2 group transition-all"
+                >
                   <div className={`w-14 h-14 bg-white text-slate-400 rounded-2xl flex items-center justify-center shadow-sm group-hover:bg-teal-50 group-hover:text-teal-500 group-active:scale-90 border border-slate-50`}>
                     <btn.icon size={22} strokeWidth={2} />
                   </div>
@@ -536,23 +564,35 @@ export default function App() {
                 <p className="text-xs font-black text-teal-700 uppercase">Vaccines</p>
               </Card>
             </div>
+
+            <SectionHeader title="New Features" />
+            <div className="grid grid-cols-2 gap-4 pb-6">
+              <Card
+                onClick={() => setActiveTab('milestones')}
+                className="bg-yellow-50 border-yellow-100 flex flex-col items-center text-center gap-2 group">
+                <Star className="text-yellow-500 group-hover:scale-110 transition-transform" />
+                <p className="text-xs font-black text-yellow-700 uppercase">Milestones</p>
+              </Card>
+              <Card
+                onClick={() => setActiveTab('lullaby')}
+                className="bg-indigo-50 border-indigo-100 flex flex-col items-center text-center gap-2 group">
+                <Music className="text-indigo-500 group-hover:rotate-12 transition-transform" />
+                <p className="text-xs font-black text-indigo-700 uppercase">Lullabies</p>
+              </Card>
+            </div>
           </div>
         )}
 
         {activeTab === 'tracker' && (
-          <div className="space-y-6 animate-in slide-in-from-right duration-700 text-center py-20">
-            <Activity size={48} className="mx-auto text-teal-300 mb-4" />
-            <h2 className="text-xl font-black text-slate-800">Tracking Hub</h2>
-            <p className="text-slate-400 text-sm">Your health metrics will appear here.</p>
-          </div>
+          <TrackerView logs={logs} onDelete={handleDeleteLog} />
         )}
 
         {activeTab === 'ai' && (
-          <div className="h-[70vh] flex flex-col justify-center items-center text-teal-300 italic opacity-50">
-            <img src="/babysarthi.png" alt="AI" className="w-24 h-24 mb-4 opacity-50 grayscale" />
-            <p className="uppercase tracking-[0.3em] text-[10px] font-black">Advisor Loading</p>
-          </div>
+          <ChatInterface />
         )}
+
+        {activeTab === 'milestones' && <MilestonesView />}
+        {activeTab === 'lullaby' && <LullabyPlayer />}
 
         {activeTab === 'me' && (
           <div className="space-y-6 animate-in slide-in-from-left duration-700">
@@ -582,6 +622,7 @@ export default function App() {
       </div>
 
       <nav className="fixed bottom-6 left-6 right-6 bg-white/80 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] p-4 flex justify-around shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] z-[100]">
+        {/* We keep the nav clean, other tabs are accessible from Quick Actions */}
         {[
           { id: 'home', icon: Home, label: 'Home' },
           { id: 'tracker', icon: Activity, label: 'Track' },
@@ -598,6 +639,14 @@ export default function App() {
           </button>
         ))}
       </nav>
+
+      {activeModal && (
+        <LoggerModal
+          type={activeModal}
+          onClose={() => setActiveModal(null)}
+          onSave={handleSaveLog}
+        />
+      )}
     </div>
   );
 }
