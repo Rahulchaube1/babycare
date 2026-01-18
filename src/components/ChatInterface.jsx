@@ -21,7 +21,7 @@ const ChatInterface = () => {
             const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
             const searchRes = await fetch(searchUrl);
             const searchData = await searchRes.json();
-            
+
             if (!searchData.query?.search?.length) return null;
 
             const bestPage = searchData.query.search[0];
@@ -32,13 +32,13 @@ const ChatInterface = () => {
             const contentUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts|pageimages&pageids=${pageId}&exintro=true&explaintext=true&piprop=thumbnail&pithumbsize=500&format=json&origin=*`;
             const contentRes = await fetch(contentUrl);
             const contentData = await contentRes.json();
-            
+
             const page = contentData.query.pages[pageId];
-            
-            return { 
-                title: bestPage.title, 
+
+            return {
+                title: bestPage.title,
                 summary: page.extract,
-                imageUrl: page.thumbnail ? page.thumbnail.source : null 
+                imageUrl: page.thumbnail ? page.thumbnail.source : null
             };
         } catch (e) {
             console.error("Wikipedia fetch failed:", e);
@@ -58,7 +58,7 @@ const ChatInterface = () => {
 
         try {
             const wikiData = await getWikipediaData(userInput);
-            
+
             let aiMsg;
 
             if (wikiData) {
@@ -102,18 +102,18 @@ const ChatInterface = () => {
                             <div className="flex flex-col gap-1 w-full">
                                 <div
                                     className={`p-4 rounded-2xl text-sm font-medium leading-relaxed overflow-hidden ${msg.sender === 'user'
-                                            ? 'bg-slate-800 text-white rounded-tr-none'
-                                            : msg.isError 
-                                                ? 'bg-rose-50 text-rose-600 border border-rose-100 rounded-tl-none'
-                                                : 'bg-white border border-slate-100 text-slate-600 shadow-sm rounded-tl-none'
+                                        ? 'bg-slate-800 text-white rounded-tr-none'
+                                        : msg.isError
+                                            ? 'bg-rose-50 text-rose-600 border border-rose-100 rounded-tl-none'
+                                            : 'bg-white border border-slate-100 text-slate-600 shadow-sm rounded-tl-none'
                                         }`}
                                 >
                                     {msg.title && <h4 className="font-bold text-lg mb-2 text-teal-700">{msg.title}</h4>}
-                                    
+
                                     {msg.image && (
-                                        <img 
-                                            src={msg.image} 
-                                            alt={msg.title} 
+                                        <img
+                                            src={msg.image}
+                                            alt={msg.title}
                                             className="w-full h-48 object-cover rounded-xl mb-3 border border-slate-100"
                                         />
                                     )}
